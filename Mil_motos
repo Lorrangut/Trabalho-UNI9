@@ -1,2 +1,11 @@
 # Trabalho-UNI9
 Projeto
+__pycache__/
+*.pyc
+*.db
+*.log
+.env
+.DS_Store
+node_modules/
+.env.local
+.env.*.local
