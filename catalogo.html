@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mil Motos - Catálogo de Motos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #f5f7fa;
+            --text-color: white;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            color: var(--text-color);
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* Raios de chuva */
+        .raios {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .raio {
+            position: absolute;
+            width: 1px;
+            height: 25%;
+            background: linear-gradient(to bottom, 
+                rgba(0, 191, 255, 0.9),
+                rgba(0, 191, 255, 0.8),
+                rgba(0, 191, 255, 0.6)
+            );
+            transform: translateY(-75%);
+            animation: chuva 3s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes chuva {
+            0% {
+                transform: translateY(-75%);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.7;
+                transform: translateY(-50%);
+            }
+            50% {
+                opacity: 0.9;
+                transform: translateY(0%);
+            }
+            80% {
+                opacity: 0.7;
+                transform: translateY(50%);
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .catalogo-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .filtro-container {
+            display: flex;
+            gap: 1rem;
+            margin: 6rem auto;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .filtro-container select {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filtro-container select:hover {
+            border-color: rgba(0, 191, 255, 0.5);
+        }
+
+        .filtro-container select:focus {
+            outline: none;
+            border-color: rgba(0, 191, 255, 0.7);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .search-button {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: darken(var(--secondary-color), 10%);
+        }
+
+        .motos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .moto-card {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .moto-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            transition: border-width 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            pointer-events: none;
+        }
+
+        .moto-card:hover::before {
+            border-width: 4px;
+            border-color: rgba(0, 90, 170, 1);
+            box-shadow: 0 0 40px rgba(0, 90, 170, 0.6) !important;
+            transform: scale(1.02);
+        }
+
+        .moto-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 50px rgba(0, 90, 170, 0.4) !important;
+        }
+
+        .moto-card:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(0, 90, 170, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .moto-card:hover::after {
+            opacity: 1;
+        }
+
+        .moto-card:hover .moto-image {
+            transform: scale(1.05);
+        }
+
+        .moto-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .moto-image:hover {
+            transform: scale(1.05);
+        }
+
+        .moto-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .moto-image:hover::before {
+            opacity: 1;
+        }
+
+        .moto-info {
+            padding: 1.5rem;
+        }
+
+        .moto-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .moto-info .preco {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .moto-info .descricao {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ver-detalhes {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .ver-detalhes:hover {
+            background: darken(var(--secondary-color), 10%);
+        }
+
+        @media (max-width: 768px) {
+            .motos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .moto-card {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Raios de fundo -->
+    <div class="raios">
+        <!-- Raios da esquerda -->
+        <div class="raio" style="left: 5%"></div>
+        <div class="raio" style="left: 10%"></div>
+        <div class="raio" style="left: 15%"></div>
+        <div class="raio" style="left: 20%"></div>
+        <div class="raio" style="left: 25%"></div>
+        
+        <!-- Raios do centro -->
+        <div class="raio" style="left: 30%"></div>
+        <div class="raio" style="left: 35%"></div>
+        <div class="raio" style="left: 40%"></div>
+        <div class="raio" style="left: 45%"></div>
+        <div class="raio" style="left: 50%"></div>
+        <div class="raio" style="left: 55%"></div>
+        <div class="raio" style="left: 60%"></div>
+        
+        <!-- Raios da direita -->
+        <div class="raio" style="left: 65%"></div>
+        <div class="raio" style="left: 70%"></div>
+        <div class="raio" style="left: 75%"></div>
+        <div class="raio" style="left: 80%"></div>
+        <div class="raio" style="left: 85%"></div>
+        <div class="raio" style="left: 90%"></div>
+        <div class="raio" style="left: 95%"></div>
+    </div>
+    <nav class="navbar">
+        <div class="logo">Mil Motos</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <div class="catalogo-container">
+        <div class="filtro-container">
+            <select id="filtroMarca">
+                <option value="">Todas as Marcas</option>
+                <option value="honda">Honda</option>
+                <option value="yamaha">Yamaha</option>
+                <option value="kawasaki">Kawasaki</option>
+                <option value="suzuki">Suzuki</option>
+                <option value="bmw">BMW</option>
+                <option value="harley">Harley-Davidson</option>
+                <option value="ducati">Ducati</option>
+                <option value="ktm">KTM</option>
+                <option value="royal">Royal Enfield</option>
+            </select>
+            <select id="filtroPreco">
+                <option value="">Qualquer Preço</option>
+                <option value="ate15">Até R$ 15.000</option>
+                <option value="15a30">R$ 15.000 - R$ 30.000</option>
+                <option value="30a50">R$ 30.000 - R$ 50.000</option>
+                <option value="50a70">R$ 50.000 - R$ 70.000</option>
+                <option value="70a100">R$ 70.000 - R$ 100.000</option>
+                <option value="acima100">Acima de R$ 100.000</option>
+            </select>
+            <select id="filtroCilindrada">
+                <option value="">Qualquer Cilindrada</option>
+                <option value="ate125">Até 125cc</option>
+                <option value="125a250">125cc - 250cc</option>
+                <option value="250a500">250cc - 500cc</option>
+                <option value="500a800">500cc - 800cc</option>
+                <option value="800a1200">800cc - 1200cc</option>
+                <option value="acima1200">Acima de 1200cc</option>
+            </select>
+            <select id="filtroTipo">
+                <option value="">Todos os Tipos</option>
+                <option value="street">Street</option>
+                <option value="naked">Naked</option>
+                <option value="sport">Sport</option>
+                <option value="cruiser">Cruiser</option>
+                <option value="touring">Touring</option>
+                <option value="adventure">Adventure</option>
+                <option value="scrambler">Scrambler</option>
+            </select>
+            <select id="filtroAno">
+                <option value="">Qualquer Ano</option>
+                <option value="ate2000">Até 2000</option>
+                <option value="2001a2005">2001 - 2005</option>
+                <option value="2006a2010">2006 - 2010</option>
+                <option value="2011a2015">2011 - 2015</option>
+                <option value="2016a2020">2016 - 2020</option>
+                <option value="2021a2025">2021 - 2025</option>
+            </select>
+            <select id="filtroStatus">
+                <option value="">Todos os Status</option>
+                <option value="novo">Novo</option>
+                <option value="usado">Usado</option>
+                <option value="semi-novo">Semi-novo</option>
+            </select>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Pesquisar motos..." class="search-input">
+            <button class="search-button" onclick="searchMotos()">Buscar</button>
+        </div>
+        <h1>Catálogo de Motos</h1>
+        <div class="motos-grid">
+            <!-- Bajaj Dominar 400 -->
+            <div class="moto-card">
+                <img src="assets/motos/dominar.jpg" alt="Bajaj Dominar 400" class="moto-image">
+                <div class="moto-info">
+                    <h3>Bajaj Dominar 400</h3>
+                    <div class="preco">R$ 39.990,00</div>
+                    <div class="descricao">
+                        Motor: 373cc<br>
+                        Potência: 40cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Yamaha Fazer 250 -->
+            <div class="moto-card">
+                <img src="assets/motos/Fazer250.png" alt="Yamaha Fazer 250" class="moto-image">
+                <div class="moto-info">
+                    <h3>Yamaha Fazer 250</h3>
+                    <div class="preco">R$ 34.990,00</div>
+                    <div class="descricao">
+                        Motor: 249cc<br>
+                        Potência: 30cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Yamaha MT-03 -->
+            <div class="moto-card">
+                <img src="assets/motos/Mt03.png" alt="Yamaha MT-03" class="moto-image">
+                <div class="moto-info">
+                    <h3>Yamaha MT-03</h3>
+                    <div class="preco">R$ 49.990,00</div>
+                    <div class="descricao">
+                        Motor: 321cc<br>
+                        Potência: 42cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda CB 300F Twister -->
+            <div class="moto-card">
+                <img src="assets/motos/twister300.png" alt="Honda CB 300F Twister" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda CB 300F Twister</h3>
+                    <div class="preco">R$ 32.990,00</div>
+                    <div class="descricao">
+                        Motor: 296cc<br>
+                        Potência: 33cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda Titan 160 -->
+            <div class="moto-card">
+                <img src="assets/motos/titan160.png" alt="Honda Titan 160" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda Titan 160</h3>
+                    <div class="preco">R$ 24.990,00</div>
+                    <div class="descricao">
+                        Motor: 160cc<br>
+                        Potência: 15cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda Fan 160 -->
+            <div class="moto-card">
+                <img src="assets/motos/fan160.png" alt="Honda Fan 160" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda Fan 160</h3>
+                    <div class="preco">R$ 23.990,00</div>
+                    <div class="descricao">
+                        Motor: 160cc<br>
+                        Potência: 15cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda Start -->
+            <div class="moto-card">
+                <img src="assets/motos/start.png" alt="Honda Start" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda Start</h3>
+                    <div class="preco">R$ 18.990,00</div>
+                    <div class="descricao">
+                        Motor: 125cc<br>
+                        Potência: 11cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- BMW -->
+            <div class="moto-card">
+                <img src="assets/motos/BMW.png" alt="BMW" class="moto-image">
+                <div class="moto-info">
+                    <h3>BMW</h3>
+                    <div class="preco">R$ 120.000,00</div>
+                    <div class="descricao">
+                        Motor: 955cc<br>
+                        Potência: 105cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- BMW F900 GS -->
+            <div class="moto-card">
+                <img src="assets/motos/bmw f900.png" alt="BMW F900 GS" class="moto-image">
+                <div class="moto-info">
+                    <h3>BMW F900 GS</h3>
+                    <div class="preco">R$ 110.000,00</div>
+                    <div class="descricao">
+                        Motor: 895cc<br>
+                        Potência: 95cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda XRE 300 -->
+            <div class="moto-card">
+                <img src="assets/motos/xre300.png" alt="Honda XRE 300" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda XRE 300</h3>
+                    <div class="preco">R$ 36.990,00</div>
+                    <div class="descricao">
+                        Motor: 296cc<br>
+                        Potência: 33cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Honda PCX 160 -->
+            <div class="moto-card">
+                <img src="assets/motos/pcx.png" alt="Honda PCX 160" class="moto-image">
+                <div class="moto-info">
+                    <h3>Honda PCX 160</h3>
+                    <div class="preco">R$ 28.990,00</div>
+                    <div class="descricao">
+                        Motor: 157cc<br>
+                        Potência: 15cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+
+            <!-- Yamaha XTZ 250 Lander -->
+            <div class="moto-card">
+                <img src="assets/motos/lander250.png" alt="Yamaha XTZ 250 Lander" class="moto-image">
+                <div class="moto-info">
+                    <h3>Yamaha XTZ 250 Lander</h3>
+                    <div class="preco">R$ 38.990,00</div>
+                    <div class="descricao">
+                        Motor: 249cc<br>
+                        Potência: 28cv<br>
+                        Combustível: Gasolina
+                    </div>
+                    <a href="#" class="ver-detalhes">Ver detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Função para buscar motos
+        function searchMotos() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const cards = document.querySelectorAll('.moto-card');
+
+            cards.forEach(card => {
+                const motoName = card.querySelector('h3').textContent.toLowerCase();
+                const motoDesc = card.querySelector('.descricao').textContent.toLowerCase();
+                
+                if (motoName.includes(filter) || motoDesc.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Busca automática ao digitar
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                searchMotos();
+            }
+        });
+    </script>
+    <script>
+        // Função para gerar número aleatório entre dois valores
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Cria 10 raios distribuídos aleatoriamente
+        const numRaios = 10;
+        const containerWidth = document.querySelector('.raios').offsetWidth;
+        
+        for (let i = 0; i < numRaios; i++) {
+            const raio = document.createElement('div');
+            raio.className = 'raio';
+            
+            // Posiciona os raios aleatoriamente
+            const left = getRandom(0, containerWidth - 20) + 'px';
+            raio.style.left = left;
+            
+            // Adiciona delay aleatório para a animação
+            raio.style.animationDelay = getRandom(-2, 0) + 's';
+            
+            document.querySelector('.raios').appendChild(raio);
+        }
+
+        // Seleciona todos os raios
+        const raios = document.querySelectorAll('.raio');
+
+        // Adiciona animação aleatória para cada raio
+        raios.forEach(raio => {
+            // Tempo de animação aleatório entre 2.5s e 3.5s
+            const duration = getRandom(2.5, 3.5);
+            // Delay aleatório entre 0 e 2 segundos
+            const delay = getRandom(0, 2);
+            // Opacidade inicial aleatória entre 0.5 e 0.8
+            const initialOpacity = getRandom(0.5, 0.8);
+
+            // Aplica os valores aleatórios
+            raio.style.animationDuration = `${duration}s`;
+            raio.style.animationDelay = `${delay}s`;
+            raio.style.opacity = initialOpacity.toString();
+        });
+
+        // Função para filtrar as motos
+        function filtrarMotos() {
+            const marca = document.getElementById('filtroMarca').value;
+            const preco = document.getElementById('filtroPreco').value;
+            const cilindrada = document.getElementById('filtroCilindrada').value;
+            const tipo = document.getElementById('filtroTipo').value;
+            const ano = document.getElementById('filtroAno').value;
+            const status = document.getElementById('filtroStatus').value;
+            const motos = document.querySelectorAll('.moto-card');
+
+            motos.forEach(moto => {
+                let mostra = true;
+                
+                // Filtra por marca
+                if (marca && !moto.textContent.toLowerCase().includes(marca)) {
+                    mostra = false;
+                }
+
+                // Filtra por preço
+                if (preco) {
+                    const precoMoto = parseFloat(moto.querySelector('.preco').textContent.replace(/[^\d.]/g, ''));
+                    if (preco === 'ate15' && precoMoto > 15000) mostra = false;
+                    if (preco === '15a30' && (precoMoto < 15000 || precoMoto > 30000)) mostra = false;
+                    if (preco === '30a50' && (precoMoto < 30000 || precoMoto > 50000)) mostra = false;
+                    if (preco === '50a70' && (precoMoto < 50000 || precoMoto > 70000)) mostra = false;
+                    if (preco === '70a100' && (precoMoto < 70000 || precoMoto > 100000)) mostra = false;
+                    if (preco === 'acima100' && precoMoto <= 100000) mostra = false;
+                }
+
+                // Filtra por cilindrada
+                if (cilindrada) {
+                    const cilindradaMoto = moto.querySelector('.descricao').textContent;
+                    const cc = cilindradaMoto.match(/\d+cc/);
+                    const ccNum = cc ? parseInt(cc[0].replace('cc', '')) : 0;
+
+                    if (cilindrada === 'ate125' && ccNum > 125) mostra = false;
+                    if (cilindrada === '125a250' && (ccNum < 125 || ccNum > 250)) mostra = false;
+                    if (cilindrada === '250a500' && (ccNum < 250 || ccNum > 500)) mostra = false;
+                    if (cilindrada === '500a800' && (ccNum < 500 || ccNum > 800)) mostra = false;
+                    if (cilindrada === '800a1200' && (ccNum < 800 || ccNum > 1200)) mostra = false;
+                    if (cilindrada === 'acima1200' && ccNum <= 1200) mostra = false;
+                }
+
+                // Filtra por tipo
+                if (tipo) {
+                    const tipoMoto = moto.querySelector('.descricao').textContent.toLowerCase();
+                    if (!tipoMoto.includes(tipo)) mostra = false;
+                }
+
+                // Filtra por ano
+                if (ano) {
+                    const anoMoto = moto.querySelector('.descricao').textContent.match(/\d{4}/);
+                    const anoNum = anoMoto ? parseInt(anoMoto[0]) : 0;
+
+                    if (ano === 'ate2000' && anoNum > 2000) mostra = false;
+                    if (ano === '2001a2005' && (anoNum < 2001 || anoNum > 2005)) mostra = false;
+                    if (ano === '2006a2010' && (anoNum < 2006 || anoNum > 2010)) mostra = false;
+                    if (ano === '2011a2015' && (anoNum < 2011 || anoNum > 2015)) mostra = false;
+                    if (ano === '2016a2020' && (anoNum < 2016 || anoNum > 2020)) mostra = false;
+                    if (ano === '2021a2025' && (anoNum < 2021 || anoNum > 2025)) mostra = false;
+                }
+
+                // Filtra por status
+                if (status) {
+                    const statusMoto = moto.querySelector('.descricao').textContent.toLowerCase();
+                    if (!statusMoto.includes(status)) mostra = false;
+                }
+
+                moto.style.display = mostra ? 'block' : 'none';
+            });
+        }
+
+        // Adiciona evento de mudança nos filtros
+        document.getElementById('filtroMarca').addEventListener('change', filtrarMotos);
+        document.getElementById('filtroPreco').addEventListener('change', filtrarMotos);
+        document.getElementById('filtroCilindrada').addEventListener('change', filtrarMotos);
+        document.getElementById('filtroTipo').addEventListener('change', filtrarMotos);
+        document.getElementById('filtroAno').addEventListener('change', filtrarMotos);
+        document.getElementById('filtroStatus').addEventListener('change', filtrarMotos);
+    </script>
+    </body>
+</html>

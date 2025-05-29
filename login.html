@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mil Motos - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #333333;
+            --text-color: #ffffff;
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: url('assets/Planofundo2.jpg') center/cover fixed;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .heart {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUp 10s ease-out forwards;
+            z-index: 9999;
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .login-container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        .login-box {
+            background: #000000;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid #ffffff;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border: 2px solid rgba(0, 90, 170, 0.2);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .login-box:hover::before {
+            border-width: 4px;
+            border-color: rgba(0, 90, 170, 0.8);
+            box-shadow: 0 0 30px rgba(0, 90, 170, 0.3);
+        }
+
+        .login-box h3 {
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #000000;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 10px rgba(0, 90, 170, 0.2);
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .toggle-forms {
+            margin: 1rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .toggle-forms button {
+            flex: 1;
+        }
+
+        .toggle-forms button.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+        }
+
+        .message {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div id="login-form">
+                <h3>Login</h3>
+                <form id="login">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="login-button">Entrar</button>
+                </form>
+            </div>
+            <div id="register-form" style="display: none;">
+                <h3>Cadastro</h3>
+                <form id="register">
+                    <div class="form-group">
+                        <label for="register-nome">Nome</label>
+                        <input type="text" id="register-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Senha</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit" class="login-button">Cadastrar</button>
+                </form>
+            </div>
+
+            <div class="toggle-forms">
+                <button id="toggle-login" class="login-button active">Login</button>
+                <button id="toggle-register" class="login-button">Cadastrar</button>
+            </div>
+
+            <div id="message" class="message"></div>
+            <a href="index.html" class="back-link">Voltar para Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Função para criar corações
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            heart.innerHTML = '❤️';
+            heart.style.fontSize = Math.random() * 60 + 40 + 'px';
+            // Alternar entre vermelho e azul
+            const colors = ['#FF0000', '#0000FF'];
+            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 2000);
+        }
+
+        // Adiciona corações ao mover o mouse
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Cria corações aleatoriamente
+            if (Math.random() < 0.1) { // 10% de chance de criar um coração
+                createHeart(x, y);
+            }
+        });
+
+        // Função para alternar entre formulários
+        document.getElementById('toggle-login').addEventListener('click', () => {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('toggle-login').classList.add('active');
+            document.getElementById('toggle-register').classList.remove('active');
+        });
+
+        document.getElementById('toggle-register').addEventListener('click', () => {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('toggle-login').classList.remove('active');
+            document.getElementById('toggle-register').classList.add('active');
+        });
+
+        // Função para mostrar mensagem
+        function showMessage(message, success = true) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.style.color = success ? '#0096FF' : '#ff4444';
+            messageDiv.style.display = 'block';
+            
+            // Remove a mensagem após 3 segundos
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Formulário de login
+        document.getElementById('login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('http://localhost:7878/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Login bem-sucedido!');
+                    // Redirecionar para a página inicial
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showMessage(data.message, false);
+                }
+            } catch (error) {
+                showMessage('Erro na comunicação com o servidor', false);
+            }
+        });
+
+        // Formulário de registro
+        document.getElementById('register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nome = document.getElementById('register-nome').value;
+            const email = document.getElementById('register-email').value;
+            const senha = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch('http://localhost:7878/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ nome, email, senha })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Cadastro realizado com sucesso!');
+                    // Alternar para o formulário de login
+                    document.getElementById('toggle-login').click();
+                } else {
+                    showMessage(data.message, false);
+                }
+            } catch (error) {
+                showMessage('Erro na comunicação com o servidor', false);
+            }
+        });
+    </script>
+</body>
+</html>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+            <a href="index.html" class="back-link">Voltar para Home</a>
+        </div>
+    </div>
+</body>
+</html>
